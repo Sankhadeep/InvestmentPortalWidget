@@ -1,0 +1,21 @@
+totalAggBenefit();
+
+function totalAggBenefit() {
+	var totalBenefit = 0;
+	
+	if(!JSUtil.nil(projectClass) && !JSUtil.nil(projectFilter)){ 
+		var projectGa = new GlideAggregate(projectClass);
+		projectGa.addEncodedQuery(projectFilter);
+		projectGa.setGroup(false);
+		projectGa.addAggregate('SUM', 'benefits');
+
+		projectGa.query();
+
+		if(projectGa.next()) {
+			if(projectGa.getAggregate('SUM', 'benefits'))
+				totalBenefit += parseFloat(projectGa.getAggregate('SUM', 'benefits'));
+		}
+	}
+
+	return PPMCurrencyHelper.getFormattedAmountWithCurrency(totalBenefit);
+}
