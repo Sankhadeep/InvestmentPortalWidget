@@ -1,0 +1,34 @@
+totalAggBenefit();
+
+function totalAggBenefit() {
+	var totalBenefit = 0;
+
+	if(!JSUtil.nil(demandClass) && !JSUtil.nil(demandFilter)) {
+		var demandGa = new GlideAggregate(demandClass);
+		demandGa.addEncodedQuery(demandFilter);
+		demandGa.setGroup(false);
+		demandGa.addAggregate('SUM', 'financial_benefit');
+		demandGa.query();
+
+		if(demandGa.next()) {
+			if(demandGa.getAggregate('SUM', 'financial_benefit'))
+				totalBenefit += parseFloat(demandGa.getAggregate('SUM', 'financial_benefit'));
+		}
+	}
+	
+	if(!JSUtil.nil(projectClass) && !JSUtil.nil(projectFilter)){ 
+		var projectGa = new GlideAggregate(projectClass);
+		projectGa.addEncodedQuery(projectFilter);
+		projectGa.setGroup(false);
+		projectGa.addAggregate('SUM', 'benefits');
+
+		projectGa.query();
+
+		if(projectGa.next()) {
+			if(projectGa.getAggregate('SUM', 'benefits'))
+				totalBenefit += parseFloat(projectGa.getAggregate('SUM', 'benefits'));
+		}
+	}
+
+	return PPMCurrencyHelper.getFormattedAmountWithCurrency(totalBenefit);
+}
